@@ -28,14 +28,14 @@ global $USER, $PAGE, $TEMPLATE;
 $groups      = new Group();
 $institution = new Institution();
 
-if (isset($_POST) ){
+if (!empty($_POST)){ //empty benutzen, da bei isset auch bei leerem POST der folgende code ausgeführt wird
     $edit_user = new User(); 
     $sel_id    = SmartyPaginate::_getSelection('userP');    //use selection from paginator (don't use form data) to get selections on all pages of paginator
     if (is_array($sel_id)){
         foreach ($sel_id as $edit_user->id ) {              //Array per schleife abarbeiten	
             $edit_user->load('id',$edit_user->id);          // load current user 
             switch ($_POST) {
-                case isset($_POST['resetPassword']):
+                case isset($_POST['resetPassword']): 
                                     if (isset($_POST['confirmed'])) {
                                         $edit_user->confirmed = 3; // User have to change password after login
                                     } else {
@@ -99,7 +99,8 @@ $TEMPLATE->assign('roles', $roles->get());                              //getRol
 //$group_list = $groups->getGroups('group', $USER->id);                   // Load groups
 $group_list = $groups->getGroups('institution', $USER->institution_id);   // Load groups --> only load groups of current institution to prevent enroling to groups of foreign institutions
 $TEMPLATE->assign('groups_array', $group_list);                         
-$TEMPLATE->assign('myInstitutions', $institution->getInstitutions('user', null, $USER->id));
+$TEMPLATE->assign('myInstitutions', $institution->getInstitutions('user', '', $USER->id, false));
+
 
 $users      = new USER();
 $p_options  = array('delete' => array('onclick'     => "processor('delete', 'user', __id__, { 'reload': 'false', 'callback': 'replaceElementByID', 'element_Id': 'row__id__'});", 
